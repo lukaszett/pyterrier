@@ -296,7 +296,7 @@ def read_topics(filename, format="trec", **kwargs):
 
     Supported Formats:
         * "trec" -- an SGML-formatted TREC topics file. Delimited by TOP tags, each having NUM and TITLE tags; DESC and NARR tags are skipped by default. Control using whitelist and blacklist kwargs
-        * "trecxml" -- a more modern XML formatted topics file. Delimited by topic tags, each having number tags. query, question and narrative tags are parsed and joined into a single query field by default. Control using tags kwarg.
+        * "trecxml" -- a more modern XML formatted topics file. Delimited by topic tags, each having number tags. query, question and narrative tags are parsed and joined into a single query field by default. Control using tags kwarg. Additional tags can be loaded using the whitelist kwargs.
         * "singeline" -- one query per line, preceeded by a space or colon. Tokenised by default, use tokenise=False kwargs to prevent tokenisation.
     """
     if format is None:
@@ -323,7 +323,7 @@ def _read_topics_trec(file_path, doc_tag="TOP", id_tag="NUM", whitelist=["TITLE"
     topics_dt = pd.DataFrame(topics_lst,columns=['qid','query'])
     return topics_dt
 
-def _read_topics_trecxml(filename, tags=["query", "question", "narrative"], tokenise=True):
+def _read_topics_trecxml(filename, tags=["query", "question", "narrative"], tokenise=True, whitelist=[]):
     """
     Parse a file containing topics in TREC-like XML format
 
@@ -331,7 +331,7 @@ def _read_topics_trecxml(filename, tags=["query", "question", "narrative"], toke
         filename(str): The path to the topics file
 
     Returns:
-        pandas.Dataframe with columns=['qid','query']
+        pandas.Dataframe with columns=['qid','query'] and fields specified in whitelist.
     """
     import xml.etree.ElementTree as ET
 
@@ -348,14 +348,17 @@ def _read_topics_trecxml(filename, tags=["query", "question", "narrative"], toke
         except KeyError:
             qid = child.find("number").text
         query = ""
+        fields = {}
         for tag in child:
             if tag.tag in tags:
                 query_text = tag.text
                 if tokenise:
                     query_text = " ".join(tokeniser.getTokens(query_text))
                 query += " " + query_text
-        topics.append((str(qid), query.strip()))
-    return pd.DataFrame(topics, columns=["qid", "query"])
+            elif tag.tag in whitelist:
+                fields[tag.tag] = tag.text
+        topics.append({"qid": str(qid), "query": query.strip(), **fields})
+    return pd.DataFrame(topics)
 
 def _read_topics_singleline(filepath, tokenise=True):
     """

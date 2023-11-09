@@ -50,3 +50,19 @@ class TestTopicsParsing(BaseTestCase):
             columns=["qid", "query"],
         )
         self.assertTrue(exp_result.equals(result))
+
+    def test_parse_trecxml_topics_file_tags(self):
+        input = os.path.dirname(os.path.realpath(__file__)) + "/fixtures/topics.trecxml"
+        result = pt.io.read_topics(
+            input, format="trecxml", tags=["title"], whitelist=["description"]
+        )
+        print(result)
+        exp_result = pd.DataFrame(
+            [
+                ["1", "lights", "Description lights"],
+                ["2", "radiowaves", "Description radiowaves"],
+                ["3", "sounds", "Description sounds"],
+            ],
+            columns=["qid", "query", "description"],
+        )
+        self.assertTrue(exp_result.equals(result))
