@@ -148,7 +148,7 @@ class BatchRetrieve(BatchRetrieveBase):
             **kwargs):
         """
         Instantiates a BatchRetrieve object from a pre-built index access via a dataset.
-        Pre-built indices are ofen provided via the `Terrier Data Repository <http://data.terrier.org/>`_.
+        Pre-built indices are often provided via the `Terrier Data Repository <http://data.terrier.org/>`_.
 
         Examples::
 
