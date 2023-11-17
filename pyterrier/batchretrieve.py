@@ -561,10 +561,10 @@ class TextScorer(TextIndexProcessor):
                 [
                     ["q1", "chemical reactions", "d1", "professor protor poured the chemicals"],
                     ["q1", "chemical reactions", "d2", "chemical brothers turned up the beats"],
-                ], columns=["qid", "query", "text"])
-            textscorer = pt.TextScorer(takes="docs", body_attr="text", wmodel="TF_IDF")
+                ], columns=["qid", "query", "docno", "text"])
+            textscorer = pt.batchretrieve.TextScorer(takes="docs", body_attr="text", wmodel="TF_IDF")
             rtr = textscorer.transform(df)
-            #rtr will score each document for the query "chemical reactions" based on the provided document contents
+            #rtr will contain scores for each document for the query "chemical reactions" based on the provided document contents
     """
 
     def __init__(self, takes="docs", **kwargs):
