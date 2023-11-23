@@ -570,6 +570,14 @@ class TextScorer(TextIndexProcessor):
     def __init__(self, takes="docs", **kwargs):
         super().__init__(BatchRetrieve, takes=takes, **kwargs)
 
+    def __repr__(self):
+        return "TS(" + ",".join([
+            self.takes,
+            self.returns,
+            self.body_attr,
+            str(self.kwargs)
+            ]) + ")"
+
 class FeaturesBatchRetrieve(BatchRetrieve):
     """
     Use this class for retrieval with multiple features
